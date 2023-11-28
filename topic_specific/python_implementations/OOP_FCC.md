@@ -92,7 +92,6 @@ Encapsulation is the process of preventing clients from accessing certain proper
 Private attributes are incaccessible attributes and information hiding is the process of making particular attributes private. We use two underscore to declare private characteristics.  
 
 Let's introduce a private attribute called __discount in the Book class.
-
 ```python3
 class Book:
     def __init__(self, title, quantity, author, price):
@@ -274,4 +273,134 @@ Book: Python Foundations, Quantity: 12, Author: PSF, Price: 655
 #### **What is Polymorphism?**  
 
 The term 'polymorphism' comes from the Greek language and means 'something that takes on multiple forms.'  
+
+Polymorphism refers to subclass's ability to adapt a method that already exists in it's superclass to meet it's needs.  
+
+To put it another way subclass can use it's superclass's methods as it is or modify it as required.  
+
+```python3
+class Academic(Book):
+    def __init__(self, title, quantity, author, price, branch):
+        super().__init__(title, quantity, author, price)
+        self.branch = branch
+
+    def __repr__(self):
+        return f"Book: {self.title}, Branch: {self.branch}, Quantity: {self.quantity}, Author: {self.author}, Price: {self.get_price()}"
+```  
+
+The Book superclass has a specific method called __repr__. This method can be used by subclass Novel so that it is called whenever an object is printed.
+
+The Academic subclass, on the other hand, is defined with its own __repr__ special function in the example code above. The Academic subclass will invoke its own method by suppressing the same method present in its superclass, thanks to polymorphism.  
+
+```python3
+novel1 = Novel('Two States', 20, 'Chetan Bhagat', 200, 187)
+novel1.set_discount(0.20)
+
+academic1 = Academic('Python Foundations', 12, 'PSF', 655, 'IT')
+
+print(novel1)
+print(academic1)
+```  
+
+#### Output:  
+
+```shell
+Book: Two States, Quantity: 20, Author: Chetan Bhagat, Price: 160.0
+Book: Python Foundations, Branch: IT, Quantity: 12, Author: PSF, Price: 655
+```  
+
+#### **What is Abstraction**  
+
+Abstraction isn't supported directly in Python. Calling a magic method, on the other hand, allows for abstraction.  
+
+If abstraction method is called, subclass that inherit from the superclass must implement it's own implementation of the method.  
+
+A superclass's abstract method will never be called by its subclasses. But the abstraction aids in the maintenance of a similar structure across all subclasses.  
+
+In our parent class Book, we have defined the __repr__ method. Let's make that method abstract, forcing every subclass to compulsorily have its own __repr__ method.  
+
+```python3
+from abc import ABC, abstractmethod
+
+
+class Book(ABC):
+    def __init__(self, title, quantity, author, price):
+        self.title = title
+        self.quantity = quantity
+        self.author = author
+        self.__price = price
+        self.__discount = None
+
+    def set_discount(self, discount):
+        self.__discount = discount
+
+    def get_price(self):
+        if self.__discount:
+            return self.__price * (1-self.__discount)
+        return self.__price
+
+    @abstractmethod
+    def __repr__(self):
+        return f"Book: {self.title}, Quantity: {self.quantity}, Author: {self.author}, Price: {self.get_price()}"
+
+
+class Novel(Book):
+    def __init__(self, title, quantity, author, price, pages):
+        super().__init__(title, quantity, author, price)
+        self.pages = pages
+
+
+class Academic(Book):
+    def __init__(self, title, quantity, author, price, branch):
+        super().__init__(title, quantity, author, price)
+        self.branch = branch
+
+    def __repr__(self):
+        return f"Book: {self.title}, Branch: {self.branch}, Quantity: {self.quantity}, Author: {self.author}, Price: {self.get_price()}"
+
+
+novel1 = Novel('Two States', 20, 'Chetan Bhagat', 200, 187)
+novel1.set_discount(0.20)
+
+academic1 = Academic('Python Foundations', 12, 'PSF', 655, 'IT')
+
+print(novel1)
+print(academic1)
+```
+
+In the above code, we have inherited the ABC class to create the Book class. We've made the __repr__ method abstract by adding the @abstractmethod decorator.
+
+While creating the Novel class, we intentionally missed the implementation of the __repr__ method to see what happens.  
+
+#### Output:  
+
+```shell
+Traceback (most recent call last):
+  File "C:\Users\ashut\Desktop\Test\hello\test.py", line 40, in <module>
+    novel1 = Novel('Two States', 20, 'Chetan Bhagat', 200, 187)
+TypeError: Can't instantiate abstract class Novel with abstract method __repr__
+```  
+
+We get a TypeError saying we cannot instantiate object of the Novel class. Let's add the implementation of the __repr__ method and see what happens now.  
+
+```python3
+class Novel(Book):
+    def __init__(self, title, quantity, author, price, pages):
+        super().__init__(title, quantity, author, price)
+        self.pages = pages
+
+    def __repr__(self):
+        return f"Book: {self.title}, Quantity: {self.quantity}, Author: {self.author}, Price: {self.get_price()}"
+```
+
+#### Output:
+```shell
+Book: Two States, Quantity: 20, Author: Chetan Bhagat, Price: 160.0
+Book: Python Foundations, Branch: IT, Quantity: 12, Author: PSF, Price: 655
+```  
+
+#### **Method Overloading**  
+
+#### **Method Overriding**  
+
 
